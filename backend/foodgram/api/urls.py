@@ -5,6 +5,9 @@ from .views import (
     RecipeViewSet,
     TagViewSet,
     IngredientViewSet,
+    ShoppingCartViewSet,
+    DownloadShoppingCartViewSet
+    # CustomUserViewSet
 )
 
 app_name = 'api'
@@ -21,6 +24,9 @@ router_v1 = NoPUTRouter()
 router_v1.register('tags', TagViewSet, basename='tags')
 router_v1.register('ingredients', IngredientViewSet, basename='ingrediants')
 router_v1.register('recipes', RecipeViewSet, basename='recipes')
+# router_v1.register('recipes/download_shopping_cart', DownloadShoppingCartViewSet, basename='recipes')
+router_v1.register('recipes/(?P<recipe_id>\d+)/shopping_cart', ShoppingCartViewSet, basename='recipes')
+# router_v1.register('users', CustomUserViewSet, basename='users')
 
 urlpatterns = [
     path(f'{API_VERSION_V1}/', include(router_v1.urls)),
