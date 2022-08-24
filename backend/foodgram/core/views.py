@@ -17,8 +17,9 @@ def get_shopping_cart_file(self, request):
     """Качаем список с ингредиентами."""
     buffer = io.BytesIO()
     page = canvas.Canvas(buffer)
-    pdfmetrics.registerFont(TTFont('FreeSans',
-                            'recipes/fonts/FreeSans.ttf'))
+    pdfmetrics.registerFont(TTFont('AlternaNr',
+                        'backend/foodgram/core/fonts/AlternaNr.ttf'))
+    page.setFont('AlternaNr', 14)
     x_position, y_position = 50, 800
     shopping_cart = (
         request.user.shopping_cart.get().recipes.
@@ -26,7 +27,7 @@ def get_shopping_cart_file(self, request):
             'ingredients__name',
             'ingredients__measurement_unit'
         ).annotate(amount=Sum('recipe_ingredients__amount')).order_by())
-    page.setFont('FreeSans', 14)
+
     if shopping_cart:
         indent = 20
         page.drawString(x_position, y_position, 'Cписок покупок:')
@@ -40,14 +41,12 @@ def get_shopping_cart_file(self, request):
             if y_position <= 50:
                 page.showPage()
                 y_position = 800
-        page.save()
-        buffer.seek(0)
-        return buffer
-    page.setFont('FreeSans', 24)
-    page.drawString(
+    else:
+        page.drawString(
         x_position,
         y_position,
-        'Cписок покупок пуст!')
+        'В списке покупок ничего нет =(')
+        
     page.save()
     buffer.seek(0)
     return buffer
