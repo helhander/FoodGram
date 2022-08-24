@@ -1,21 +1,21 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.http import FileResponse
 from api.serializers import (
     TagSerializer,
     IngredientSerializer,
     RecipeSerializer,
-    DownloadShoppingCartSerializer,
     ShoppingCartSerializer
 )
-from core.views import ListRetrieveViewSet
-from recipes.models import Tag, Ingredient, Recipe, ShopingCart
+from core.views import ListRetrieveViewSet,get_shopping_cart_file
+from recipes.models import Tag, Ingredient, Recipe, ShoppingCart
 from rest_framework import filters, status, viewsets
 from djoser.views import UserViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .permissions import ReadOnly, IsMeAndSuperUserAndAdmin
 
-
+SHOPPING_CART_FILENAME = 'Список покупок'
 User = get_user_model()
 
 # class CustomUserViewSet(UserViewSet):
@@ -40,43 +40,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
-    @action(detail=True,methods=['delete'], url_path='shopping_cart')
-    def remove_user_cart_recipe(self, request, pk):
-        user = request.user
+    @action(detail=True,methods=['post','delete'], url_path='shopping_cart')
+    def add_shopping_cart_recipe(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
-        user.shoping_cart.get().recipes.remove(recipe)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        user = request.user        
+        shopping_cart = ShoppingCart.objects.get_or_create(user=user)[0]
+        if request.method=='DELETE':
+            shopping_cart.recipes.remove(recipe)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True,methods=['post'], url_path='shopping_cart')
-    def add_user_cart_recipe(self, request, pk):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = request.user
-        shoping_cart = ShopingCart.objects.get_or_create(user=user)
-        shoping_cart[0].recipes.add(recipe)
+        shopping_cart.recipes.add(recipe)
         serializer = ShoppingCartSerializer(recipe)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK,
                         headers=headers)
 
-class ShoppingCartViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
-    serializer_class = ShoppingCartSerializer
 
-    def get_permissions(self):
-        return [permission() for permission in [IsMeAndSuperUserAndAdmin]]
-        if self.action == 'list':
-            return [IsMeAndSuperUserAndAdmin]
-        else:
-            return [IsMeAndSuperUserAndAdmin]
-
-    def get_queryset(self):
-        recipe = get_object_or_404(Recipe, pk=self.kwargs.get('recipe_id'))
-        return recipe
-#,permission_classes=(IsMeAndSuperUserAndAdmin,)
+    @action(detail=False,methods=['get'], url_path='download_shopping_cart')
+    def download_shopping_cart(self, request):
+        file = get_shopping_cart_file(self, request)
+        return FileResponse(file, as_attachment=True, filename=SHOPPING_CART_FILENAME)
 
 
-class DownloadShoppingCartViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
-    serializer_class = DownloadShoppingCartSerializer
+
     # def perform_create(self, serializer):        
     #     serializer.save(author=self.request.user)

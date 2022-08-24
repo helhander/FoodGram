@@ -69,9 +69,9 @@ class RecipeIngredient(models.Model):
 
 class Tag(models.Model):
     name = models.CharField('Название', max_length=200, unique=True)
-    color = models.CharField('Цвет в HEX', max_length=7, blank=True, null=True)
+    color = models.CharField('Цвет в HEX', max_length=7, unique=True)
     slug = models.SlugField(
-        'Слаг id', max_length=200, blank=True, null=True, unique=True
+        'Слаг id', max_length=200, unique=True
     )
 
     # def save(self, *args, **kwargs):
@@ -99,7 +99,7 @@ class Favorite(models.Model):
         related_name='favorites',
         verbose_name='Пользователь',
     )
-    recipe = models.ManyToManyField(
+    recipes = models.ManyToManyField(
         'Recipe',
         through='RecipeFavorite',
         verbose_name='Избранное',
@@ -118,27 +118,27 @@ class RecipeFavorite(models.Model):
         return f'{self.recipe}-{self.favorite}'
 
 
-class ShopingCart(models.Model):
+class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='shoping_cart',
+        related_name='shopping_cart',
         verbose_name='Пользователь',
     )
     recipes = models.ManyToManyField(
         'Recipe',
-        through='RecipeShopingCart',
+        through='RecipeShoppingCart',
         verbose_name='Избранное',
     )
 
 
-class RecipeShopingCart(models.Model):
+class RecipeShoppingCart(models.Model):
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
-    shoping_cart = models.ForeignKey('ShopingCart', on_delete=models.CASCADE)
+    shopping_cart = models.ForeignKey('ShoppingCart', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Рецепт-Список покупок'
         verbose_name_plural = 'Рецепты-Список покупок'
 
     def __str__(self):
-        return f'{self.recipe}-{self.shoping_cart}'
+        return f'{self.recipe}-{self.shopping_cart}'

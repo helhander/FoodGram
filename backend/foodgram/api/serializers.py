@@ -2,7 +2,7 @@ from rest_framework import serializers,status
 from django.shortcuts import get_object_or_404
 
 from core.serializers import Base64FileField
-from recipes.models import Tag, Ingredient, Recipe, RecipeIngredient, ShopingCart
+from recipes.models import Tag, Ingredient, Recipe, RecipeIngredient, ShoppingCart
 from django.contrib.auth import get_user_model
 from users.models import Subscription
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -121,17 +121,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         ).data
         request_user = self.context['request'].user
         data['is_favorited'] = request_user.favorites.filter(
-            recipe=instance
+            recipes=instance
         ).exists()
-        data['is_in_shopping_cart'] = request_user.shoping_cart.filter(
-            recipe=instance
+        data['is_in_shopping_cart'] = request_user.shopping_cart.filter(
+            recipes=instance
         ).exists()
         return data
 
     def create(self, validated_data):
         author = self.context.get('request').user
-        tags = validated_data.get('tags')
-        recipe_ingredients = validated_data.get('ingredients')
+        tags = validated_data.pop('tags')
+        recipe_ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
         ingredients = []
         for recipe_ingredient in recipe_ingredients:
@@ -177,23 +177,3 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
-
-    # def create(self, validated_data):
-    #     recipe_id = (
-    #         self.context.get('request')
-    #         .parser_context.get('kwargs')
-    #         .get('recipe_id')
-    #     )
-    #     recipe = get_object_or_404(Recipe, pk=recipe_id)
-    #     user = self.context.get('request').user
-    #     shoping_cart = ShopingCart.objects.get_or_create(user=user)
-    #     shoping_cart[0].recipes.add(recipe)
-    #     return recipe
-
-
-class DownloadShoppingCartSerializer(serializers.ModelSerializer):
-    file = serializers.FileField()
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        return data
