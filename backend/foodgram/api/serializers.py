@@ -121,10 +121,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         ).data
         request_user = self.context['request'].user
         data['is_favorited'] = request_user.favorites.filter(
-            recipes=instance
+            recipe=instance
         ).exists()
         data['is_in_shopping_cart'] = request_user.shopping_cart.filter(
-            recipes=instance
+            recipe=instance
         ).exists()
         return data
 
@@ -167,7 +167,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ShoppingCartSerializer(serializers.ModelSerializer):
+class RecipeSimpleSerializer(serializers.ModelSerializer):
     cooking_time = serializers.IntegerField(
         source='cooking_time_min', read_only=True
     )

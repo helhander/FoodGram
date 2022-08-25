@@ -1,15 +1,9 @@
+from django.urls import path
+
+from .views import SubscriberViewSet
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-
-from .views import (
-    RecipeViewSet,
-    TagViewSet,
-    IngredientViewSet,
-    SubscriberViewSet
-)
-
-app_name = 'api'
-API_VERSION_V1 = 'v1'
+app_name = 'subscribes'
 
 class NoPUTRouter(DefaultRouter):
     def get_method_map(self, viewset, method_map):
@@ -19,12 +13,16 @@ class NoPUTRouter(DefaultRouter):
 
 
 router_v1 = NoPUTRouter()
-router_v1.register('tags', TagViewSet, basename='tags')
-router_v1.register('ingredients', IngredientViewSet, basename='ingrediants')
-router_v1.register('recipes', RecipeViewSet, basename='recipes')
 
 router_v1.register('users', SubscriberViewSet, basename='users')
 
 urlpatterns = [
-    path(f'{API_VERSION_V1}/', include(router_v1.urls)),
+    path('', include(router_v1.urls)),
 ]
+# urlpatterns = [
+#     path(
+#         'users/',
+#         SubscriberViewSet,
+#         name='subscribes'
+#     ),
+# ]

@@ -99,23 +99,11 @@ class Favorite(models.Model):
         related_name='favorites',
         verbose_name='Пользователь',
     )
-    recipes = models.ManyToManyField(
+    recipe = models.ForeignKey(
         'Recipe',
-        through='RecipeFavorite',
-        verbose_name='Избранное',
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
     )
-
-
-class RecipeFavorite(models.Model):
-    recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
-    favorite = models.ForeignKey('Favorite', on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Рецепт-Избранное'
-        verbose_name_plural = 'Рецепты-Избранное'
-
-    def __str__(self):
-        return f'{self.recipe}-{self.favorite}'
 
 
 class ShoppingCart(models.Model):
@@ -125,20 +113,8 @@ class ShoppingCart(models.Model):
         related_name='shopping_cart',
         verbose_name='Пользователь',
     )
-    recipes = models.ManyToManyField(
+    recipe = models.ForeignKey(
         'Recipe',
-        through='RecipeShoppingCart',
-        verbose_name='Избранное',
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
     )
-
-
-class RecipeShoppingCart(models.Model):
-    recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
-    shopping_cart = models.ForeignKey('ShoppingCart', on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Рецепт-Список покупок'
-        verbose_name_plural = 'Рецепты-Список покупок'
-
-    def __str__(self):
-        return f'{self.recipe}-{self.shopping_cart}'
