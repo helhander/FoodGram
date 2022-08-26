@@ -1,28 +1,15 @@
-from django.urls import path
+from core.urls import NoPUTRouter
 
-from .views import SubscriberViewSet
+from .views import CustomUserViewSet
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
-app_name = 'subscribes'
 
-class NoPUTRouter(DefaultRouter):
-    def get_method_map(self, viewset, method_map):
-        bound_methods = super().get_method_map(viewset, method_map)
-        bound_methods.pop('put', None)
-        return bound_methods
+app_name = 'users'
 
 
-router_v1 = NoPUTRouter()
+router = NoPUTRouter()
 
-router_v1.register('users', SubscriberViewSet, basename='users')
+router.register('users', CustomUserViewSet, basename='users')
 
 urlpatterns = [
-    path('', include(router_v1.urls)),
+    path('', include(router.urls)),
 ]
-# urlpatterns = [
-#     path(
-#         'users/',
-#         SubscriberViewSet,
-#         name='subscribes'
-#     ),
-# ]

@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
 from api.serializers import (

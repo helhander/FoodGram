@@ -5,6 +5,7 @@ from django.utils.text import slugify
 
 from django.core.files.base import ContentFile
 
+
 class Base64FileField(serializers.Field):
     def to_representation(self, value):
         return value

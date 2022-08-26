@@ -1,11 +1,10 @@
-from rest_framework import serializers,status
-from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 
 from core.serializers import Base64FileField
-from recipes.models import Tag, Ingredient, Recipe, RecipeIngredient, ShoppingCart
+from recipes.models import Tag, Ingredient, Recipe, RecipeIngredient
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 from users.models import Subscription
-from djoser.serializers import UserCreateSerializer, UserSerializer
 
 
 User = get_user_model()
@@ -25,7 +24,6 @@ class CustomUserSerializer(UserSerializer):
         ).exists()
         return data
 
-
 class CustomUserCreateSerializer(UserCreateSerializer):
     password = serializers.CharField(
         style={"input_type": "password"}, write_only=True
@@ -33,14 +31,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
     class Meta(UserCreateSerializer.Meta):
         model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'password',
-        )
+        fields = (*USER_BASE_FIELDS, 'password')
 
 
 class TagSerializer(serializers.ModelSerializer):
