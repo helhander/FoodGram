@@ -8,19 +8,19 @@ from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from django.db.models import Sum
 
-from api.serializers import RecipeSimpleSerializer
+from .serializers import RecipeSimpleSerializer
 from recipes.models import Recipe
 
-class ListRetrieveViewSet(
+class ListRetrieveNoPagViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
 ):
-    pass
+    pagination_class = None
 
 def get_shopping_cart_file(self, request):
     """Качаем список с ингредиентами."""
-    buffer = io.BytesIO()
+    buffer = io.BytesIO()   
     page = canvas.Canvas(buffer)
     pdfmetrics.registerFont(TTFont('AlternaNr',
                         'backend/foodgram/core/fonts/AlternaNr.ttf'))

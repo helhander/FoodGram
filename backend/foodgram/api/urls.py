@@ -6,7 +6,6 @@ from .views import (
     RecipeViewSet,
     TagViewSet,
     IngredientViewSet,
-    SubscriberViewSet
 )
 
 app_name = 'api'
@@ -17,8 +16,6 @@ router_v1 = NoPUTRouter()
 router_v1.register('tags', TagViewSet, basename='tags')
 router_v1.register('ingredients', IngredientViewSet, basename='ingrediants')
 router_v1.register('recipes', RecipeViewSet, basename='recipes')
-
-router_v1.register('users', SubscriberViewSet, basename='users')
 
 urlpatterns = [
     path(f'{API_VERSION_V1}/', include(router_v1.urls)),

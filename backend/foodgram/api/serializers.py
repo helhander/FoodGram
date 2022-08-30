@@ -1,37 +1,14 @@
 from rest_framework import serializers
+from users.serializers import CustomUserSerializer
 
 from core.serializers import Base64FileField
 from recipes.models import Tag, Ingredient, Recipe, RecipeIngredient
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 from users.models import Subscription
 
 
 User = get_user_model()
-USER_BASE_FIELDS = ('email', 'id', 'username', 'first_name', 'last_name')
 
-
-class CustomUserSerializer(UserSerializer):
-    class Meta(UserSerializer.Meta):
-        model = User
-        fields = USER_BASE_FIELDS
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        request_user = self.context['request'].user
-        data['is_subscribed'] = instance.subscribers.filter(
-            subscriber=request_user
-        ).exists()
-        return data
-
-class CustomUserCreateSerializer(UserCreateSerializer):
-    password = serializers.CharField(
-        style={"input_type": "password"}, write_only=True
-    )
-
-    class Meta(UserCreateSerializer.Meta):
-        model = User
-        fields = (*USER_BASE_FIELDS, 'password')
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -113,10 +90,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         request_user = self.context['request'].user
         data['is_favorited'] = request_user.favorites.filter(
             recipe=instance
-        ).exists()
+        ).exists() if not request_user.is_anonymous else False
         data['is_in_shopping_cart'] = request_user.shopping_cart.filter(
             recipe=instance
-        ).exists()
+        ).exists() if not request_user.is_anonymous else False
         return data
 
     def create(self, validated_data):
@@ -158,13 +135,3 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
 
-class RecipeSimpleSerializer(serializers.ModelSerializer):
-    cooking_time = serializers.IntegerField(
-        source='cooking_time_min', read_only=True
-    )
-    name = serializers.CharField(read_only=True)
-    image = serializers.CharField(read_only=True)
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')

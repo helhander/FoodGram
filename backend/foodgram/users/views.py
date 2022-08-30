@@ -21,7 +21,7 @@ class CustomUserViewSet(UserViewSet):
             subscription[0].delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        serializer = SubscribeSerializer(author)
+        serializer = SubscribeSerializer(author, context={'request': request})
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK,
                         headers=headers)

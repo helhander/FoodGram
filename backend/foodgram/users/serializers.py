@@ -2,27 +2,46 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from api.serializers import RecipeSimpleSerializer
+from core.serializers import RecipeSimpleSerializer
 
 User = get_user_model()
 USER_BASE_FIELDS = ('email', 'id', 'username', 'first_name', 'last_name')
 
 
-class SubscribeSerializer(serializers.ModelSerializer):    
+class CustomUserSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        model = User
+        fields = USER_BASE_FIELDS
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request_user = self.context['request'].user
+        data['is_subscribed'] = instance.subscribers.filter(
+            subscriber=request_user
+        ).exists() if not request_user.is_anonymous else False
+        return data
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    password = serializers.CharField(
+        style={"input_type": "password"}, write_only=True
+    )
+
+    class Meta(UserCreateSerializer.Meta):
+        model = User
+        fields = (*USER_BASE_FIELDS, 'password')
+
+class SubscribeSerializer(CustomUserSerializer):    
     recipes = RecipeSimpleSerializer(many=True, required=False)
     recipes_count = serializers.IntegerField(required=False)
-    is_subscribed = serializers.BooleanField(read_only=True)
     class Meta:
         model = User
         fields = (
-            *USER_BASE_FIELDS,'recipes','recipes_count','is_subscribed'
+            *USER_BASE_FIELDS,'recipes','recipes_count'
         )
     def to_representation(self, instance):
-        user = self.context['request'].user
         data = super().to_representation(instance)
         recipes = RecipeSimpleSerializer(data=instance.recipes.all(),many=True)
         recipes.is_valid()
         data['recipes'] = recipes.data
         data['recipes_count'] = instance.recipes.count()
-        data['is_subscribed'] = user.subscribing.filter(subscriber=user).exists()
         return data        

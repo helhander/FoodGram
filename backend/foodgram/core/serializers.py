@@ -5,6 +5,8 @@ from django.utils.text import slugify
 
 from django.core.files.base import ContentFile
 
+from recipes.models import Recipe
+
 
 class Base64FileField(serializers.Field):
     def to_representation(self, value):
@@ -35,3 +37,14 @@ class IngredientField(serializers.Field):
             raise serializers.ValidationError('Ошибка')
 
         return file_url
+
+class RecipeSimpleSerializer(serializers.ModelSerializer):
+    cooking_time = serializers.IntegerField(
+        source='cooking_time_min', read_only=True
+    )
+    name = serializers.CharField(read_only=True)
+    image = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')

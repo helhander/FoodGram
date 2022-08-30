@@ -5,37 +5,34 @@ from api.serializers import (
     TagSerializer,
     IngredientSerializer,
     RecipeSerializer,
-    RecipeSimpleSerializer,
 )
 from core.views import get_recipe_action_response
 
-from core.views import ListRetrieveViewSet, get_shopping_cart_file
+from core.views import ListRetrieveNoPagViewSet, get_shopping_cart_file
 from recipes.models import Tag, Ingredient, Recipe, ShoppingCart, Favorite
 from rest_framework import filters, status, viewsets
 from djoser.views import UserViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .permissions import ReadOnly, IsMeAndSuperUserAndAdmin
+from .permissions import ReadOnly, IsMeAndSuperUserAndAdmin, IsAdmin
 
 SHOPPING_CART_FILENAME = 'Список покупок'
 User = get_user_model()
-class SubscriberViewSet(UserViewSet):
-    pass
 
-class TagViewSet(ListRetrieveViewSet):
+
+class TagViewSet(ListRetrieveNoPagViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
-class IngredientViewSet(ListRetrieveViewSet):
+class IngredientViewSet(ListRetrieveNoPagViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
+    permission_classes = ((IsAdmin | ReadOnly),)
     @action(detail=True, methods=['post', 'delete'], url_path='favorite')
     def favorite_actions(self, request, pk):
         response = get_recipe_action_response(self, request, pk, Favorite)
