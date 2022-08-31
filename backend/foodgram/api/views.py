@@ -1,4 +1,4 @@
-
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
 from api.serializers import (
@@ -6,7 +6,8 @@ from api.serializers import (
     IngredientSerializer,
     RecipeSerializer,
 )
-from core.views import get_recipe_action_response
+
+from core.views import get_recipe_action_response,IngredientSearchFilter,RecipeFilter
 
 from core.views import ListRetrieveNoPagViewSet, get_shopping_cart_file
 from recipes.models import Tag, Ingredient, Recipe, ShoppingCart, Favorite
@@ -14,7 +15,7 @@ from rest_framework import filters, status, viewsets
 from djoser.views import UserViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .permissions import ReadOnly, IsMeAndSuperUserAndAdmin, IsAdmin
+from .permissions import ReadOnly, IsAdmin, ReadOnlyOrAuthorOrAdmin
 
 SHOPPING_CART_FILENAME = 'Список покупок'
 User = get_user_model()
@@ -23,16 +24,21 @@ User = get_user_model()
 class TagViewSet(ListRetrieveNoPagViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    lookup_field = 'slug'
 
 
 class IngredientViewSet(ListRetrieveNoPagViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filter_backends = (IngredientSearchFilter,)
+    
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = ((IsAdmin | ReadOnly),)
+    permission_classes = (ReadOnlyOrAuthorOrAdmin,)
+    filter_backends = (DjangoFilterBackend,)
+    filter_class  = RecipeFilter    
     @action(detail=True, methods=['post', 'delete'], url_path='favorite')
     def favorite_actions(self, request, pk):
         response = get_recipe_action_response(self, request, pk, Favorite)

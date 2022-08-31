@@ -1,6 +1,5 @@
+from core.utils import is_admin
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-
-from core.utils import isInAdminGroup
 
 
 class ReadOnly(BasePermission):
@@ -10,23 +9,22 @@ class ReadOnly(BasePermission):
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        return (
-            user.is_superuser
-            or user.is_authenticated
-            and isInAdminGroup(user)
-        )
+        return is_admin(user)
 
-class IsMeAndSuperUserAndAdmin(BasePermission):
+class ReadOnlyOrAuthorOrAdmin(BasePermission):
     def has_permission(self, request, view):
-        return True
-        try:
-            username_me = view.kwargs.get('username') == 'me'
-        except AttributeError:
-            username_me = False
+        return request.method in SAFE_METHODS or request.user.is_authenticated
 
-        return request.user.is_authenticated and any(
-            (
-                username_me,
-                request.user.is_superuser,
-            )
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return (
+            request.method in SAFE_METHODS
+            or obj.author == user
+            or is_admin(user)
         )
+
+class Retrieve(BasePermission):
+    def has_permission(self, request, view):
+        if view.action=='retrieve':
+            return True
+        return False
