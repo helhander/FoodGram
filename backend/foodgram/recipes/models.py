@@ -34,8 +34,6 @@ class Recipe(models.Model):
 
     class Meta:
         ordering = ['-pub_date']
-        verbose_name = 'Рецепт'
-        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.text
@@ -46,8 +44,6 @@ class Ingredient(models.Model):
     measurement_unit = models.CharField('Единица измерения', max_length=200)
 
     class Meta:
-        verbose_name = 'Ингредиент'
-        verbose_name_plural = 'Ингредиенты'
         constraints = [
             models.UniqueConstraint(
                 name='unique_name_measurement_unit',
@@ -55,15 +51,14 @@ class Ingredient(models.Model):
             ),
         ]
 
+    def __str__(self):
+        return f'{self.name}, {self.measurement_unit}'
+
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey('Recipe', related_name='recipe_ingredients',on_delete=models.CASCADE)
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE)
     amount = models.PositiveIntegerField('Количество')
-
-    class Meta:
-        verbose_name = 'Рецепт-Ингредиент'
-        verbose_name_plural = 'Рецепты-Ингредиенты'
 
     def __str__(self):
         return f'{self.recipe}-{self.ingredient}'
@@ -76,6 +71,8 @@ class Tag(models.Model):
         'Слаг id', max_length=200, unique=True
     )
 
+    def __str__(self):
+        return self.name
     # def save(self, *args, **kwargs):
     #     if not self.slug:
     #         self.slug = slugify(self.name, instance=self)
@@ -86,9 +83,6 @@ class RecipeTag(models.Model):
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
     tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
 
-    class Meta:
-        verbose_name = 'Рецепт-Тег'
-        verbose_name_plural = 'Рецепты-Теги'
 
     def __str__(self):
         return f'{self.recipe}-{self.tag}'
@@ -104,6 +98,7 @@ class Favorite(models.Model):
     recipe = models.ForeignKey(
         'Recipe',
         on_delete=models.CASCADE,
+        related_name='favorites',
         verbose_name='Рецепт',
     )
 
