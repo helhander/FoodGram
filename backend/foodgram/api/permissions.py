@@ -6,10 +6,12 @@ class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
 
+
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         return is_admin(user)
+
 
 class ReadOnlyOrAuthorOrAdmin(BasePermission):
     def has_permission(self, request, view):
@@ -23,8 +25,13 @@ class ReadOnlyOrAuthorOrAdmin(BasePermission):
             or is_admin(user)
         )
 
-class Retrieve(BasePermission):
+
+class RetrieveOrMeActions(BasePermission):
     def has_permission(self, request, view):
-        if view.action=='retrieve':
+        if (
+            view.action == 'retrieve'
+            or view.action == 'me'
+            and request.user.is_authenticated
+        ):
             return True
         return False

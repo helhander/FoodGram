@@ -24,6 +24,7 @@ User = get_user_model()
 class TagViewSet(ListRetrieveNoPagViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (ReadOnly,)
     lookup_field = 'slug'
 
 
@@ -31,6 +32,7 @@ class IngredientViewSet(ListRetrieveNoPagViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filter_backends = (IngredientSearchFilter,)
+    permission_classes = (ReadOnly,)
     
 
 class RecipeViewSet(viewsets.ModelViewSet):

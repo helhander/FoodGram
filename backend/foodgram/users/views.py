@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets,status
 
-from api.permissions import Retrieve
+from api.permissions import RetrieveOrMeActions
 from .serializers import SubscribeSerializer
 from django.db.models import Count
 
@@ -14,7 +14,7 @@ from .models import Subscription
 User = get_user_model()
 # Create your views here.
 class CustomUserViewSet(UserViewSet):
-    permission_classes = (Retrieve,)
+    permission_classes = (RetrieveOrMeActions,)
 
     @action(detail=True, methods=['post', 'delete'], url_path='subscribe')
     def subscribe_actions(self, request, id):
