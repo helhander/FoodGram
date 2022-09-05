@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils.text import slugify
+
 
 User = get_user_model()
 
@@ -56,7 +56,9 @@ class Ingredient(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey('Recipe', related_name='recipe_ingredients',on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        'Recipe', related_name='recipe_ingredients', on_delete=models.CASCADE
+    )
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE)
     amount = models.PositiveIntegerField('Количество')
 
@@ -67,22 +69,15 @@ class RecipeIngredient(models.Model):
 class Tag(models.Model):
     name = models.CharField('Название', max_length=200, unique=True)
     color = models.CharField('Цвет в HEX', max_length=7, unique=True)
-    slug = models.SlugField(
-        'Слаг id', max_length=200, unique=True
-    )
+    slug = models.SlugField('Слаг id', max_length=200, unique=True)
 
     def __str__(self):
         return self.name
-    # def save(self, *args, **kwargs):
-    #     if not self.slug:
-    #         self.slug = slugify(self.name, instance=self)
-    #     super().save(*args, **kwargs)
 
 
 class RecipeTag(models.Model):
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
     tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
-
 
     def __str__(self):
         return f'{self.recipe}-{self.tag}'
