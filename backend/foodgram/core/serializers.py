@@ -1,7 +1,7 @@
 import base64
 
-from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.utils.text import slugify
 from rest_framework import serializers
 

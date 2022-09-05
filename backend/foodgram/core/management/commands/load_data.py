@@ -5,9 +5,7 @@ from django.core.management import BaseCommand
 from django.db import IntegrityError
 
 from foodgram.settings import CSV_FILES_DIR
-from recipes.models import (
-    Ingredient
-)
+from recipes.models import Ingredient
 
 FILES_CLASSES = {
     'ingredients': Ingredient,    

@@ -2,11 +2,7 @@ from django.urls import include, path
 
 from core.urls import NoPUTRouter
 
-from .views import (
-    RecipeViewSet,
-    TagViewSet,
-    IngredientViewSet,
-)
+from .views import IngredientViewSet, RecipeViewSet, TagViewSet
 
 app_name = 'api'
 

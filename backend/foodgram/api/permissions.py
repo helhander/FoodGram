@@ -1,5 +1,6 @@
+from rest_framework.permissions import SAFE_METHODS, BasePermission
+
 from core.utils import is_admin
-from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class ReadOnly(BasePermission):

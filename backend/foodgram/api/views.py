@@ -1,20 +1,18 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 
-from api.serializers import (
-    TagSerializer,
-    IngredientSerializer,
-    RecipeSerializer,
-)
+from api.serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 from core.views import (
-    get_recipe_action_response,
     IngredientSearchFilter,
+    ListRetrieveNoPagViewSet,
     RecipeFilter,
+    get_recipe_action_response,
+    get_shopping_cart_file,
 )
-from core.views import ListRetrieveNoPagViewSet, get_shopping_cart_file
-from recipes.models import Tag, Ingredient, Recipe, ShoppingCart, Favorite
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+
 from .permissions import ReadOnly, ReadOnlyOrAuthorOrAdmin
 
 SHOPPING_CART_FILENAME = 'Список покупок'
