@@ -47,13 +47,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post', 'delete'], url_path='favorite')
     def favorite_actions(self, request, pk):
-        response = get_recipe_action_response(self, request, pk, Favorite)
-        return response
+        return get_recipe_action_response(self, request, pk, Favorite)
 
     @action(detail=True, methods=['post', 'delete'], url_path='shopping_cart')
     def shopping_cart_actions(self, request, pk):
-        response = get_recipe_action_response(self, request, pk, ShoppingCart)
-        return response
+        return get_recipe_action_response(self, request, pk, ShoppingCart)
 
     @action(detail=False, methods=['get'], url_path='download_shopping_cart')
     def download_shopping_cart(self, request):
