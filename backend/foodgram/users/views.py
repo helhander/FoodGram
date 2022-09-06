@@ -43,13 +43,15 @@ class CustomUserViewSet(UserViewSet):
         if recipes_limit is not None:
             try:
                 recipes_limit_number = int(recipes_limit)
-                subscriptions = subscriptions.annotate(
-                    total_recipes=Count('recipes')
-                ).filter(total_recipes__lte=recipes_limit_number)
-            except:
+            except ValueError:
                 raise ValueError(
-                    f'Value {recipes_limit} must be integer number'
+                    f'Параметр recipes_limit {recipes_limit}'
+                    ' - должнен быть числом'
                 )
+            subscriptions = subscriptions.annotate(
+                total_recipes=Count('recipes')
+            ).filter(total_recipes__lte=recipes_limit_number)
+
         queryset = self.filter_queryset(subscriptions)
         page = self.paginate_queryset(queryset)
         serializer = SubscribeSerializer(

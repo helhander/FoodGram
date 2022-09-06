@@ -124,7 +124,7 @@ class RecipeFilter(django_filters.FilterSet):
 class IngredientSearchFilter(filters.SearchFilter):
     def filter_queryset(self, request, queryset, view):
         search_value = request.query_params.get('name')
-        if search_value == None:
+        if search_value is None:
             return queryset
 
         return queryset.filter(name__iregex=rf'^{search_value}')

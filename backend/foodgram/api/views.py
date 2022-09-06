@@ -1,9 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from api.serializers import IngredientSerializer, RecipeSerializer, TagSerializer
+from api.serializers import (
+    IngredientSerializer,
+    RecipeSerializer,
+    TagSerializer,
+)
 from core.views import (
     IngredientSearchFilter,
     ListRetrieveNoPagViewSet,

@@ -8,7 +8,7 @@ from foodgram.settings import CSV_FILES_DIR
 from recipes.models import Ingredient
 
 FILES_CLASSES = {
-    'ingredients': Ingredient,    
+    'ingredients': Ingredient,
 }
 
 FIELDS = {
