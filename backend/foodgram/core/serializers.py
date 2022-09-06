@@ -33,11 +33,9 @@ class IngredientField(serializers.Field):
             ext = format.split('/')[-1]
             file_name = slugify(self.context['request'].data['name'], True)
             file = ContentFile(base64.b64decode(imgstr))
-            file_url = default_storage.save(f'{file_name}.{ext}', file)
+            return default_storage.save(f'{file_name}.{ext}', file)
         except Exception:
             raise serializers.ValidationError('Ошибка')
-
-        return file_url
 
 
 class RecipeSimpleSerializer(serializers.ModelSerializer):

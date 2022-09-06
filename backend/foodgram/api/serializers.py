@@ -61,9 +61,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     ingredients = RecipeIngredientSerializer(many=True, required=False)
     image = Base64FileField()
-    is_favorited = (
-        serializers.SerializerMethodField()
-    )
+    is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.BooleanField(read_only=True)
 
     class Meta:
@@ -83,12 +81,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, recipe):
         request_user = self.context['request'].user
-        is_favorited = (
+        return (
             request_user.favorites.filter(recipe=recipe).exists()
             if not request_user.is_anonymous
             else False
         )
-        return is_favorited
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
