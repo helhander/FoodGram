@@ -48,4 +48,4 @@ jobs:
         with:
           context: ./backend/foodgram
           push: true
-          tags: hellfer/foodgram:latest
+          tags: hellfer/foodgram
