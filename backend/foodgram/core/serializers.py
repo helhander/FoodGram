@@ -10,7 +10,7 @@ from recipes.models import Recipe
 
 class Base64FileField(serializers.Field):
     def to_representation(self, value):
-        return value
+        return f'http://localhost/media/{value}'
 
     def to_internal_value(self, data):
         try:
