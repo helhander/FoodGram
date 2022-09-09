@@ -6,8 +6,6 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.permissions import RetrieveOrMeActions
-
 from .models import Subscription
 from .serializers import SubscribeSerializer
 
@@ -15,8 +13,6 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
-    permission_classes = (RetrieveOrMeActions,)
-
     @action(detail=True, methods=['post', 'delete'], url_path='subscribe')
     def subscribe_actions(self, request, id):
         author = get_object_or_404(User, pk=id)

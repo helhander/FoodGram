@@ -25,14 +25,3 @@ class ReadOnlyOrAuthorOrAdmin(BasePermission):
             or obj.author == user
             or is_admin(user)
         )
-
-
-class RetrieveOrMeActions(BasePermission):
-    def has_permission(self, request, view):
-        if (
-            view.action == 'retrieve'
-            or view.action == 'me'
-            and request.user.is_authenticated
-        ):
-            return True
-        return False
