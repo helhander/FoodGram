@@ -96,16 +96,10 @@ class RecipeFilter(django_filters.FilterSet):
         fields = ['is_favorited', 'is_in_shopping_cart', 'tags', 'author']
 
     def get_is_favorited(self, queryset, name, value):
-        filterd_queryset = get_filtered_queryset(
-            self, queryset, 'favorites', value
-        )
-        return filterd_queryset
+        return get_filtered_queryset(self, queryset, 'favorites', value)
 
     def get_is_in_shopping_cart(self, queryset, name, value):
-        filterd_queryset = get_filtered_queryset(
-            self, queryset, 'shopping_cart', value
-        )
-        return filterd_queryset
+        return get_filtered_queryset(self, queryset, 'shopping_cart', value)
 
     def get_tags(self, queryset, name, value):
         tags = self.request.query_params.getlist('tags')
