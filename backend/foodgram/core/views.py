@@ -1,4 +1,5 @@
 import io
+import os
 
 import django_filters
 from django.db.models import Sum
@@ -9,10 +10,11 @@ from reportlab.pdfgen import canvas
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.response import Response
 
-from core.enums import BynaryFilterValues
+from foodgram.settings import BASE_DIR
 from recipes.models import Recipe
 
 from .serializers import RecipeSimpleSerializer
+from .utils import get_filtered_queryset
 
 
 class ListRetrieveNoPagViewSet(
@@ -27,9 +29,8 @@ def get_shopping_cart_file(self, request):
     """Качаем список с ингредиентами."""
     buffer = io.BytesIO()
     page = canvas.Canvas(buffer)
-    pdfmetrics.registerFont(
-        TTFont('AlternaNr', 'backend/foodgram/core/fonts/AlternaNr.ttf')
-    )
+    font_path = os.path.join(BASE_DIR, 'core/fonts/AlternaNr.ttf')
+    pdfmetrics.registerFont(TTFont('AlternaNr', font_path))
     page.setFont('AlternaNr', 14)
     x_position, y_position = 50, 800
     shopping_cart = (
@@ -84,41 +85,31 @@ def get_recipe_action_response(self, request, pk, model):
 
 class RecipeFilter(django_filters.FilterSet):
     is_favorited = django_filters.NumberFilter(method='get_is_favorited')
-    is_subscribed = django_filters.NumberFilter(method='get_is_subscribed')
+    is_in_shopping_cart = django_filters.NumberFilter(
+        method='get_is_in_shopping_cart'
+    )
     tags = django_filters.CharFilter(method='get_tags')
     author = django_filters.NumberFilter()
 
     class Meta:
         model = Recipe
-        fields = ['is_favorited', 'is_subscribed', 'tags', 'author']
+        fields = ['is_favorited', 'is_in_shopping_cart', 'tags', 'author']
 
     def get_is_favorited(self, queryset, name, value):
-        user = self.request.user
-        if user.is_anonymous:
-            return queryset.none()
-        recipe_ids = user.favorites.values_list('recipe__id', flat=True)
-        if value == BynaryFilterValues.select.value:
-            return queryset.filter(id__in=recipe_ids)
-        elif value == BynaryFilterValues.exclude.value:
-            return queryset.exclude(id__in=recipe_ids)
+        filterd_queryset = get_filtered_queryset(
+            self, queryset, 'favorites', value
+        )
+        return filterd_queryset
 
-        raise ValueError(f'{value} is not a valid filter value')
-
-    def get_is_subscribed(self, queryset, name, value):
-        user = self.request.user
-        if user.is_anonymous:
-            return queryset.none()
-        subscribing = user.subscribing.values('author')
-        if value == BynaryFilterValues.select.value:
-            return queryset.filter(author__in=subscribing)
-        elif value == BynaryFilterValues.exclude.value:
-            return queryset.exclude(author__in=subscribing)
-
-        raise ValueError(f'{value} is not a valid filter value')
+    def get_is_in_shopping_cart(self, queryset, name, value):
+        filterd_queryset = get_filtered_queryset(
+            self, queryset, 'shopping_cart', value
+        )
+        return filterd_queryset
 
     def get_tags(self, queryset, name, value):
         tags = self.request.query_params.getlist('tags')
-        return queryset.filter(tags__slug__in=tags)
+        return queryset.filter(tags__slug__in=tags).distinct()
 
 
 class IngredientSearchFilter(filters.SearchFilter):
