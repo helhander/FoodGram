@@ -16,6 +16,7 @@ services:
       - db
     env_file:
       - ./.env
+    container_name: foodgram_backend
   frontend:
     build:
       context: ../frontend
