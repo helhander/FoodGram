@@ -136,9 +136,10 @@ class RecipeSerializer(serializers.ModelSerializer):
                 )
                 ingredients.append(recipe_ingredient.get('ingredient'))
             instance.ingredients.set(ingredients)
-        instance.text = validated_data["text"]
-        instance.cooking_time_min = validated_data["cooking_time_min"]
-        instance.name = validated_data["name"]
-        instance.image = validated_data["image"]
+        instance.text = validated_data['text']
+        instance.cooking_time_min = validated_data['cooking_time_min']
+        instance.name = validated_data['name']
+        if 'image' in validated_data:
+            instance.image = validated_data['image']
         instance.save()
         return instance
