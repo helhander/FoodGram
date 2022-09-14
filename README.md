@@ -46,7 +46,7 @@ docker-compose exec backend python manage.py migrate
 docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
-Добавить superuser, если это необходимо:
+Добавить superuser, если это необходимо (для проверки - root@yandex.ru:Qwerty123+):
 
 ```
 docker-compose exec backend python manage.py createsuperuser
