@@ -5,12 +5,13 @@ from django.core.files.storage import default_storage
 from django.utils.text import slugify
 from rest_framework import serializers
 
+from foodgram.settings import HOST
 from recipes.models import Recipe
 
 
 class Base64FileField(serializers.Field):
     def to_representation(self, value):
-        return f'http://localhost/media/{value}'
+        return f'http://{HOST}/media/{value}'
 
     def to_internal_value(self, data):
         try:

@@ -1,4 +1,4 @@
-[![foodgram workflow](https://github.com/helhander/foodgram-project-react/actions/workflows/yamdb_workflow.yml/badge.svg)](https://github.com/helhander/foodgram-project-react/actions/workflows/yamdb_workflow.yml)
+[![foodgram workflow](https://github.com/helhander/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/helhander/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
 ## Проект YaMDb.
 ### Описание
 Онлайн-сервис и API Foodgram, «Продуктовый помощник». 
