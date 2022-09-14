@@ -140,4 +140,5 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.cooking_time_min = validated_data["cooking_time_min"]
         instance.name = validated_data["name"]
         instance.image = validated_data["image"]
+        instance.save()
         return instance
