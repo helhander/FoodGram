@@ -1,6 +1,6 @@
 version: '3.3'
 services:
-  db:
+  db_foodgram:
     image: postgres:13.0-alpine
     volumes:
       - /var/lib/postgresql/data/
@@ -28,7 +28,7 @@ services:
       - backend
     env_file:
       - ./.env
-  nginx:
+  nginx_foodgram:
     image: nginx:1.19.3
     ports:
       - "80:80"

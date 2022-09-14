@@ -16,7 +16,7 @@ POSTGRES_USER='user'
 POSTGRES_PASSWORD='password'
 DB_HOST='db'
 DB_PORT=5432
-HOSTS='127.0.0.1,localhost,backend'
+ENV_ALLOWED_HOSTS='127.0.0.1,localhost,backend'
 ```
 
 ### Как запустить контейнеры:
