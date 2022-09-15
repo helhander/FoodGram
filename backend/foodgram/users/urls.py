@@ -1,7 +1,6 @@
 from django.urls import include, path
 
 from core.urls import NoPUTRouter
-
 from .views import CustomUserViewSet
 
 app_name = 'users'
