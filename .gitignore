@@ -133,3 +133,5 @@ dmypy.json
 # папки со статикой и медиа
 backend/foodgram/media/
 backend/foodgram/static/
+
+.vscode
