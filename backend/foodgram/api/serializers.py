@@ -1,7 +1,10 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from core.serializers import Base64FileField
+from core.serializers import (
+    Base64FileField,
+    modify_recipe_tags_and_ingredients,
+)
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import Subscription
 from users.serializers import CustomUserSerializer
@@ -79,6 +82,19 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
+    def validate(self, data):
+        tags = data['tags']
+        if len(tags) > len(set(tags)):
+            raise serializers.ValidationError(
+                f'Not unique tags value was set: ${tags}'
+            )
+        ingredients = list(map(lambda i: i['ingredient'], data['ingredients']))
+        if len(ingredients) > len(set(ingredients)):
+            raise serializers.ValidationError(
+                f'Not unique ingredients value was set: ${ingredients}'
+            )
+        return data
+
     def get_is_favorited(self, recipe):
         request_user = self.context['request'].user
         return (
@@ -104,42 +120,21 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
-        recipe_ingredients = validated_data.pop('ingredients')
+        ingredients_data = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
-        ingredients = []
-        for recipe_ingredient in recipe_ingredients:
-            RecipeIngredient.objects.create(
-                ingredient=recipe_ingredient.get('ingredient'),
-                amount=recipe_ingredient.get('amount'),
-                recipe=recipe,
-            )
-            ingredients.append(recipe_ingredient.get('ingredient'))
-        recipe.ingredients.set(ingredients)
-        recipe.tags.set(tags)
-        return recipe
+        modified_recipe = modify_recipe_tags_and_ingredients(
+            recipe, tags, ingredients_data
+        )
+        return modified_recipe
 
     def update(self, instance, validated_data):
-        if 'tags' in validated_data:
-            tags = validated_data.pop('tags')
-            instance.tags.set(tags)
-        if 'ingredients' in validated_data:
-            RecipeIngredient.objects.filter(
-                recipe=instance,
-            ).delete()
-            recipe_ingredients = validated_data.pop('ingredients')
-            ingredients = []
-            for recipe_ingredient in recipe_ingredients:
-                RecipeIngredient.objects.create(
-                    ingredient=recipe_ingredient.get('ingredient'),
-                    amount=recipe_ingredient.get('amount'),
-                    recipe=instance,
-                )
-                ingredients.append(recipe_ingredient.get('ingredient'))
-            instance.ingredients.set(ingredients)
-        instance.text = validated_data['text']
-        instance.cooking_time_min = validated_data['cooking_time_min']
-        instance.name = validated_data['name']
-        if 'image' in validated_data:
-            instance.image = validated_data['image']
-        instance.save()
-        return instance
+        tags = validated_data.pop('tags') if 'tags' in validated_data else []
+        ingredients_data = (
+            validated_data.pop('ingredients')
+            if 'ingredients' in validated_data
+            else []
+        )
+        modified_recipe = modify_recipe_tags_and_ingredients(
+            instance, tags, ingredients_data
+        )
+        return super().update(modified_recipe, validated_data)

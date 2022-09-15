@@ -61,6 +61,14 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE)
     amount = models.PositiveIntegerField('Количество')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_recipe_ingredient',
+                fields=('recipe', 'ingredient'),
+            ),
+        ]
+
     def __str__(self):
         return f'{self.recipe}-{self.ingredient}'
 
@@ -77,6 +85,14 @@ class Tag(models.Model):
 class RecipeTag(models.Model):
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
     tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_recipe_tag',
+                fields=('recipe', 'tag'),
+            ),
+        ]
 
     def __str__(self):
         return f'{self.recipe}-{self.tag}'
@@ -96,6 +112,14 @@ class Favorite(models.Model):
         verbose_name='Рецепт',
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_favorite_recipe_user',
+                fields=('recipe', 'user'),
+            ),
+        ]
+
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(
@@ -110,3 +134,11 @@ class ShoppingCart(models.Model):
         related_name='shopping_cart',
         verbose_name='Рецепт',
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_shoppingcart_recipe_user',
+                fields=('recipe', 'user'),
+            ),
+        ]

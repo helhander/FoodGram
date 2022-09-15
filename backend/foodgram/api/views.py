@@ -17,7 +17,6 @@ from core.views import (
     get_shopping_cart_file,
 )
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
-
 from .permissions import ReadOnly, ReadOnlyOrAuthorOrAdmin
 
 SHOPPING_CART_FILENAME = 'Список покупок'

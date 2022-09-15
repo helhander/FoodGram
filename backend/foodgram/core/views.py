@@ -12,7 +12,6 @@ from rest_framework.response import Response
 
 from foodgram.settings import BASE_DIR
 from recipes.models import Recipe
-
 from .serializers import RecipeSimpleSerializer
 from .utils import get_filtered_queryset
 
