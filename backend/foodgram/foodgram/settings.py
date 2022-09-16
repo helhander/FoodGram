@@ -3,7 +3,9 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY', default='ho^32n=30hc4x*s6qm)@mlrs=5@u82*74qxu7va)!pc4qhouz4')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY', default='ho^32n=30hc4x*s6qm)@mlrs=5@u82*74qxu7va)!pc4qhouz4'
+)
 
 DEBUG = True
 
@@ -77,8 +79,7 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.'
-    'LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'core.paginators.LimitedPageNumberPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
