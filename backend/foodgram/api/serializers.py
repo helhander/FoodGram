@@ -127,12 +127,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def update(self, instance, validated_data):
-        tags = validated_data.pop('tags') if 'tags' in validated_data else []
-        ingredients_data = (
-            validated_data.pop('ingredients')
-            if 'ingredients' in validated_data
-            else []
-        )
+        tags = validated_data.pop('tags', [])
+        ingredients_data = validated_data.pop('ingredients', [])
         modified_recipe = modify_recipe_tags_and_ingredients(
             instance, tags, ingredients_data
         )
