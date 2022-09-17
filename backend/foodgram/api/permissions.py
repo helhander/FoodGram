@@ -25,3 +25,10 @@ class ReadOnlyOrAuthorOrAdmin(BasePermission):
             or obj.author == user
             or is_admin(user)
         )
+
+
+class AllowAllExceptListAction(BasePermission):
+    def has_permission(self, request, view):
+        if view.action != 'list':
+            return True
+        return False
