@@ -47,6 +47,8 @@ class SubscribeSerializer(CustomUserSerializer):
         recipes = RecipeSimpleSerializer(
             data=instance.recipes.all(), many=True
         )
+        # Чтобы можно было обратиться к recipes.data
+        recipes.is_valid()
         data['recipes'] = recipes.data
         data['recipes_count'] = instance.recipes.count()
         return data
