@@ -44,11 +44,11 @@ class SubscribeSerializer(CustomUserSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        recipes = RecipeSimpleSerializer(
-            data=instance.recipes.all(), many=True
-        )
-        # Чтобы можно было обратиться к recipes.data
-        recipes.is_valid()
+        recipes_data = instance.recipes.all()
+        recipes_limit_number = self.context.get('recipes_limit_number')
+        if recipes_limit_number is not None:
+            recipes_data = recipes_data[:recipes_limit_number]
+        recipes = RecipeSimpleSerializer(recipes_data, many=True)
         data['recipes'] = recipes.data
         data['recipes_count'] = instance.recipes.count()
         return data

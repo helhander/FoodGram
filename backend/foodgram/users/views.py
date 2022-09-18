@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
@@ -37,8 +36,9 @@ class CustomUserViewSet(UserViewSet):
     def get_subsriptions(self, request):
         subscriptions = User.objects.filter(
             subscribers__subscriber=request.user
-        )
+        ).order_by('-id')
         recipes_limit = request.query_params.get('recipes_limit')
+        recipes_limit_number = None
         if recipes_limit is not None:
             try:
                 recipes_limit_number = int(recipes_limit)
@@ -47,13 +47,13 @@ class CustomUserViewSet(UserViewSet):
                     f'Параметр recipes_limit {recipes_limit}'
                     ' - должнен быть числом'
                 )
-            subscriptions = subscriptions.annotate(
-                total_recipes=Count('recipes')
-            ).filter(total_recipes__lte=recipes_limit_number)
-
-        queryset = self.filter_queryset(subscriptions)
-        page = self.paginate_queryset(queryset)
+        page = self.paginate_queryset(subscriptions)
         serializer = SubscribeSerializer(
-            page, many=True, context={'request': request}
+            page,
+            many=True,
+            context={
+                'request': request,
+                'recipes_limit_number': recipes_limit_number,
+            },
         )
         return self.get_paginated_response(serializer.data)

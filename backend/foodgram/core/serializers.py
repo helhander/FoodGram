@@ -25,11 +25,9 @@ class Base64FileField(serializers.Field):
 
 
 class RecipeSimpleSerializer(serializers.ModelSerializer):
-    cooking_time = serializers.IntegerField(
-        source='cooking_time_min', read_only=True
-    )
-    name = serializers.CharField(read_only=True)
-    image = serializers.CharField(read_only=True)
+    cooking_time = serializers.IntegerField(source='cooking_time_min')
+    name = serializers.CharField()
+    image = Base64FileField()
 
     class Meta:
         model = Recipe
