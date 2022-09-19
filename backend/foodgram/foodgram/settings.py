@@ -7,7 +7,7 @@ SECRET_KEY = os.getenv(
     'SECRET_KEY', default='ho^32n=30hc4x*s6qm)@mlrs=5@u82*74qxu7va)!pc4qhouz4'
 )
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'backend']
 

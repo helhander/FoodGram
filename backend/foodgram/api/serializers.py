@@ -100,6 +100,11 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f'Not unique ingredients value was set: ${ingredients}'
             )
+        cooking_time = data['cooking_time_min']
+        if cooking_time <= 0:
+            raise serializers.ValidationError(
+                'Время готовки должно быть > 0'
+            )
         return data
 
     def get_is_favorited(self, recipe):
