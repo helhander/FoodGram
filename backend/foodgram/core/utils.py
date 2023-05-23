@@ -22,7 +22,7 @@ def get_filtered_queryset(self, queryset, user_property, value):
     )
     if value == BynaryFilterValues.select.value:
         return queryset.filter(id__in=recipe_ids)
-    elif value == BynaryFilterValues.exclude.value:
+    if value == BynaryFilterValues.exclude.value:
         return queryset.exclude(id__in=recipe_ids)
 
     raise ValueError(f'{value} is not a valid filter value')
