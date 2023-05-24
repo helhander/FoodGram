@@ -22,7 +22,7 @@ ENV_ALLOWED_HOSTS='127.0.0.1,localhost,backend'
 Клонировать репозиторий:
 
 ```
-git clone git@github.com:helhander/foodgram-project-react.git
+git clone git@github.com:helhander/FoodGram.git
 ```
 
 Перейти в папку infra/
